@@ -3,7 +3,7 @@ Gem::Specification.new do |gem|
   gem.name          = 'knife-tagbulk'
   gem.authors       = ['Panagiotis Papadomitsos']
   gem.email         = ['pj@ezgr.net']
-  gem.description   = %q{Bulk tag creation/deletion for Chef nodes}
+  gem.description   = %q{Bulk create and delete node tags on Chef nodes selected by standard Chef search queries}
   gem.summary       = %q{Bulk create and delete node tags on Chef nodes selected by standard Chef search queries}
   gem.homepage      = 'https://github.com/priestjim/knife-tagbulk'
 
