@@ -13,19 +13,19 @@ Installation via RubyGems
 
 knife-tagbulk is available on rubygems.org - if you have that source in your gemrc, you can simply use:
 
-gem install knife-tagbulk
+    gem install knife-tagbulk
 
 What it does
 ------------
 
 The plugin offers 2 actions:
 
-### knife tag bulk create QUERY TAG1 TAG2 ...
+* knife tag bulk create QUERY TAG1 TAG2 ...
 
 Use `create` and specify a standard Chef query like `roles:webserver AND chef_environment:prod` and a set of space-separated
 tags (like `maintenance offline`) in order to tag all nodes retrieved from the search with the specified tags.
 
-### knife tag bulk delete QUERY TAG1 TAG2 ...
+* knife tag bulk delete QUERY TAG1 TAG2 ...
 
 Use `delete` and specify a standard Chef query like `roles:webserver AND chef_environment:prod` and a set of space-separated
 tags (like `maintenance offline`) in order to remove those tags from all nodes retrieved from the search.
