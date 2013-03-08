@@ -25,10 +25,18 @@ The plugin offers 2 actions:
 Use `create` and specify a standard Chef query like `roles:webserver AND chef_environment:prod` and a set of space-separated
 tags (like `maintenance offline`) in order to tag all nodes retrieved from the search with the specified tags.
 
-* knife tag bulk delete QUERY TAG1 TAG2 ...
+* knife tag bulk delete QUERY TAG1 TAG2 ... (options)
 
 Use `delete` and specify a standard Chef query like `roles:webserver AND chef_environment:prod` and a set of space-separated
 tags (like `maintenance offline`) in order to remove those tags from all nodes retrieved from the search.
+
+There is also the possiblity to use Regular Expressions to remove tags based on them. Just specify the `-r` switch and then
+describe the tags in Regular Expression format. Since there is great posbbility that your shell may escape them though, it's
+best if you enclose them in quotes. Specifying `-y` in addition to `-r` will skip delete confirmation.
+
+An example RE-based command is formed like this:
+
+    knife tag bulk delete 'roles:web_old_infrastructure' 'version-deployed-.*' -r -V
 
 Things to notice
 ----------------

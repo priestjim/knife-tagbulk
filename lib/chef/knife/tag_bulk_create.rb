@@ -40,38 +40,26 @@ class Chef
         end
 
         escaped_query = URI.escape(@query,Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-        q = Chef::Search::Query.new
+        query = Chef::Search::Query.new
         node_items = []
         node_count = 0
         begin
-          res = q.search(:node, escaped_query)
-          node_items = res.first.map { |node| node.name }
+          res = query.search(:node, escaped_query)
+          node_items = res.first.map { |node| node.name }.sort
           node_count = res.last
-          ui.info(
-            ui.color("\u2192  ", [:bold, :green]) +
-            ui.color(node_count.to_s, [:bold, :yellow]) +
-            ui.color(' node(s) found.', [:bold, :white])
-          )
+          nodes_found(node_count)
           if node_count > 0
             node_items.each do |node_name|              
               node = Chef::Node.load(node_name)
+              if (node.tags & @tags).size == @tags.size
+                tags_already_present(node_name, @tags)
+                next
+              end
               @tags.each { |tag| (node.tags << tag).uniq! }
               node.save
-              ui.info(
-                ui.color("\u2714  ", [:bold, :green]) +
-                ui.color("Successfully applied tag(s) ", [:bold, :white]) + 
-                ui.color("[#{@tags.join(', ')}]", [:bold, :yellow]) + 
-                ui.color(" to node ", [:bold, :white]) +
-                ui.color("[#{node_name}]", [:bold, :yellow])
-              )
+              tags_successfully_added(node_name, @tags)
               if config[:verbosity] > 0
-                ui.info(
-                  ui.color("\u2192  ", [:bold, :green]) +
-                  ui.color('Node ', [:bold, :white]) +
-                  ui.color("[#{node_name}]", [:bold, :yellow]) +
-                  ui.color(' is now tagged with ', [:bold, :white]) +
-                  ui.color("[#{node.tags.join(', ')}]", [:bold, :yellow])
-                )
+                verbose_node_tag_information(node_name, node.tags)
               end
             end
           end
@@ -80,6 +68,45 @@ class Chef
           ui.fatal("An error occurred: #{msg}")
           exit 1
         end      
+      end
+
+      def nodes_found(node_count)
+        ui.info(
+          ui.color("\u2192  ", [:bold, :green]) +
+          ui.color(node_count.to_s, [:bold, :yellow]) +
+          ui.color(' node(s) found.', [:bold, :white])
+        )      
+      end
+
+      def tags_already_present(node_name, tags)
+        ui.info(
+          ui.color("\u2714  ", [:bold, :green]) +
+          ui.color('Node ', [:bold, :white]) +
+          ui.color("[#{node_name}]", [:bold, :yellow]) +
+          ui.color(' is already tagged with ', [:bold, :white]) +
+          ui.color("[#{tags.join(', ')}]", [:bold, :yellow]) +
+          ui.color(". Skipping...", [:bold, :white])
+        )      
+      end
+
+      def tags_successfully_added(node_name, tags)
+        ui.info(
+          ui.color("\u2714  ", [:bold, :green]) +
+          ui.color("Successfully added tag(s) ", [:bold, :white]) + 
+          ui.color("[#{tags.join(', ')}]", [:bold, :yellow]) + 
+          ui.color(" to node ", [:bold, :white]) +
+          ui.color("[#{node_name}]", [:bold, :yellow])
+        )
+      end
+
+      def verbose_node_tag_information(node_name, tags)
+        ui.info(
+          ui.color("\u2192  ", [:bold, :green]) +
+          ui.color('Node ', [:bold, :white]) +
+          ui.color("[#{node_name}]", [:bold, :yellow]) +
+          ui.color(' is now tagged with ', [:bold, :white]) +
+          ui.color("[#{tags.join(', ')}]", [:bold, :yellow])
+        )
       end
 
     end
